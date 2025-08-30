@@ -3,8 +3,31 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from alpha_vantage.timeseries import TimeSeries
+import yfinance as yf
+import pandas as pd
+##data=yfinance.download("TSLA", start="2025-7-30", end="2025-08-10",interval="1d",auto_adjust=False)
 
-# Fetch SPY data from Alpha Vantage
+
+ticker = "TSLA"
+data = yf.download(ticker, period="1y", interval="1d",auto_adjust=False)
+
+# Ensure proper datetime index
+data.index = pd.to_datetime(data.index)
+
+# Drop multi-level column names (if present)
+if isinstance(data.columns, pd.MultiIndex):
+    data.columns = data.columns.droplevel(1)  # Drop ticker level
+
+# Rename columns explicitly
+#data.columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+
+#####data.index = pd.to_datetime(data.index).tz_convert('US/Eastern')
+
+# ✅ Filter data to start at 9:30 AM
+####data = data.between_time('09:30', '16:00')
+####data.index = data.index.tz_localize(None)
+
+""" # Fetch SPY data from Alpha Vantage
 api_key = "R5VTN8QDRFPEDKGM"  # Replace with your Alpha Vantage API key
 try:
     ts = TimeSeries(key=api_key, output_format="pandas")
@@ -21,16 +44,16 @@ data = data.rename(columns={
     "4. close": "Close",
     "5. volume": "Volume"
 })
-
+ """
 # Ensure index is datetime and sorted
-data.index = pd.to_datetime(data.index)
+""" data.index = pd.to_datetime(data.index) """
 data = data.sort_index()
 
 # Debug: Print available date range
 print(f"Data available from {data.index.min()} to {data.index.max()}")
 
 # Define desired date range
-start_date = "2020-06-14"
+start_date = "2025-06-14"
 end_date = data.index.max().strftime("%Y-%m-%d")  # Use latest available date
 print(f"Filtering data from {start_date} to {end_date}")
 
